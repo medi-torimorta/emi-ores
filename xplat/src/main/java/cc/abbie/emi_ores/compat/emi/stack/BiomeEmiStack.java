@@ -1,6 +1,8 @@
 package cc.abbie.emi_ores.compat.emi.stack;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+
+import cc.abbie.emi_ores.EmiOres;
 import dev.emi.emi.api.render.EmiTooltipComponents;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.stack.serializer.EmiStackSerializer;
@@ -22,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BiomeEmiStack extends EmiStack {
+    private static final ResourceLocation missingSpriteId = EmiOres.id("emi_ores/biome_icon/missing");
+    
     private final Biome biome;
     private final TextureAtlasSprite sprite;
 
@@ -33,12 +37,12 @@ public class BiomeEmiStack extends EmiStack {
 
         TextureAtlasSprite sprite;
         if (id == null) {
-            sprite = atlas.getSprite(ResourceLocation.withDefaultNamespace("emi_ores/biome_icon/missing"));
+            sprite = atlas.getSprite(missingSpriteId);
         } else {
             sprite = atlas.getSprite(getId().withPrefix("emi_ores/biome_icon/"));
 
             if (MissingTextureAtlasSprite.getLocation().equals(sprite.contents().name())) {
-                sprite = atlas.getSprite(ResourceLocation.withDefaultNamespace("emi_ores/biome_icon/missing"));
+                sprite = atlas.getSprite(missingSpriteId);
             }
         }
 
