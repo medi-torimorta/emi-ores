@@ -8,6 +8,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponentPatch;
@@ -22,9 +23,26 @@ import java.util.List;
 
 public class BiomeEmiStack extends EmiStack {
     private final Biome biome;
+    private final TextureAtlasSprite sprite;
 
     private BiomeEmiStack(Biome biome) {
         this.biome = biome;
+
+        var atlas = Minecraft.getInstance().getModelManager().getAtlas(InventoryMenu.BLOCK_ATLAS);
+        ResourceLocation id = getId();
+
+        TextureAtlasSprite sprite;
+        if (id == null) {
+            sprite = atlas.getSprite(ResourceLocation.withDefaultNamespace("emi_ores/biome_icon/missing"));
+        } else {
+            sprite = atlas.getSprite(getId().withPrefix("emi_ores/biome_icon/"));
+
+            if (MissingTextureAtlasSprite.getLocation().equals(sprite.contents().name())) {
+                sprite = atlas.getSprite(ResourceLocation.withDefaultNamespace("emi_ores/biome_icon/missing"));
+            }
+        }
+
+        this.sprite = sprite;
     }
 
     public static EmiStack of(Biome biome, DataComponentPatch componentChanges, long amount) {
@@ -42,16 +60,10 @@ public class BiomeEmiStack extends EmiStack {
 
     @Override
     public void render(GuiGraphics gui, int x, int y, float delta, int flags) {
-        Minecraft client = Minecraft.getInstance();
-
         if ((flags & RENDER_ICON) != 0) {
             PoseStack pose = gui.pose();
             pose.pushPose();
             pose.translate(0, 0, 150);
-
-            TextureAtlasSprite sprite = client.getModelManager()
-                    .getAtlas(InventoryMenu.BLOCK_ATLAS)
-                    .getSprite(getId().withPrefix("emi_ores/biome_icon/"));
 
             gui.blit(x, y, 0, 16, 16, sprite);
 
