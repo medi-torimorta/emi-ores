@@ -47,6 +47,7 @@ public record EmiOresClientConfig(
 
     public static void load() {
         INSTANCE = loadInner();
+        save();
     }
 
     public static void save() {
