@@ -14,7 +14,7 @@ import cc.abbie.emi_ores.client.FeaturesReciever;
 import cc.abbie.emi_ores.compat.emi.recipe.GeodeGenEmiRecipe;
 import cc.abbie.emi_ores.compat.emi.recipe.OreGenEmiRecipe;
 import cc.abbie.emi_ores.compat.emi.stack.BiomeEmiStack;
-import cc.abbie.emi_ores.config.EmiOresConfig;
+import cc.abbie.emi_ores.client.config.EmiOresClientConfig;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiInitRegistry;
 import dev.emi.emi.api.EmiPlugin;
@@ -27,9 +27,9 @@ import java.util.Map;
 public class EmiOresEmiPlugin implements EmiPlugin {
     @Override
     public void register(EmiRegistry registry) {
-        EmiOresConfig.load();
+        EmiOresClientConfig.load();
         Minecraft client = Minecraft.getInstance();
-        if (EmiOresConfig.INSTANCE.addBiomesToIndex()) {
+        if (EmiOresClientConfig.INSTANCE.addBiomesToIndex()) {
             client.level.registryAccess()
                     .registryOrThrow(Registries.BIOME)
                     .stream()

@@ -1,4 +1,4 @@
-package cc.abbie.emi_ores.config;
+package cc.abbie.emi_ores.client.config;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
@@ -17,25 +17,25 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public record EmiOresConfig(
+public record EmiOresClientConfig(
         boolean addBiomesToIndex
 ) {
-    public static Codec<EmiOresConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.BOOL.fieldOf("add_biomes_to_index").forGetter(EmiOresConfig::addBiomesToIndex)
-    ).apply(instance, EmiOresConfig::new));
+    public static Codec<EmiOresClientConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+            Codec.BOOL.fieldOf("add_biomes_to_index").forGetter(EmiOresClientConfig::addBiomesToIndex)
+    ).apply(instance, EmiOresClientConfig::new));
 
-    private static final EmiOresConfig DEFAULT = new EmiOresConfig(
+    private static final EmiOresClientConfig DEFAULT = new EmiOresClientConfig(
             true
     );
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    public static EmiOresConfig INSTANCE;
+    public static EmiOresClientConfig INSTANCE;
 
     private static File getConfigFile() {
-        return Platform.getConfigDir().resolve(EmiOres.MODID + ".json").toFile();
+        return Platform.getConfigDir().resolve(EmiOres.MODID + "-client.json").toFile();
     }
 
-    private static EmiOresConfig loadInner() {
+    private static EmiOresClientConfig loadInner() {
         try (FileReader fileReader = new FileReader(getConfigFile())) {
             return CODEC.parse(JsonOps.INSTANCE, GSON.fromJson(fileReader, JsonElement.class))
                     .resultOrPartial()
