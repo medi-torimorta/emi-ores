@@ -39,7 +39,7 @@ public record S2CSendFeaturesPayload(Map<ResourceLocation, PlacedFeature> featur
     );
 
     public static S2CSendFeaturesPayload decode(FriendlyByteBuf buffer) {
-        var features = buffer.readMap(
+        Map<ResourceLocation, PlacedFeature> features = buffer.readMap(
                 ResourceLocation.STREAM_CODEC,
                 PLACED_FEATURE_CODEC
         );

@@ -60,7 +60,7 @@ public class FeaturesSender {
             });
         });
 
-        var features2biomes2 = Multimaps.filterKeys(features2biomes, k -> featureMap.containsKey(k.location()));
+        SetMultimap<ResourceKey<PlacedFeature>, ResourceKey<Biome>> features2biomes2 = Multimaps.filterKeys(features2biomes, k -> featureMap.containsKey(k.location()));
 //        var featureMap2 = Maps.filterKeys(featureMap, k -> features2biomes2.containsKey(ResourceKey.create(Registries.PLACED_FEATURE, k)));
 
         sender.accept(player, new S2CSendBiomeInfoPayload(features2biomes2));
