@@ -69,7 +69,6 @@ public class FeaturesSender {
 
     private static boolean isSupported(PlacementModifier modifier) {
         return modifier instanceof HeightRangePlacement
-                || modifier instanceof BiomeFilter
                 || modifier instanceof CountPlacement
                 || modifier instanceof RarityFilter;
     }
