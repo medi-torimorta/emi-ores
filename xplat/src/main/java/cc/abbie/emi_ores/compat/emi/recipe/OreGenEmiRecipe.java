@@ -84,15 +84,13 @@ public class OreGenEmiRecipe extends AbstractPlacedFeatureEmiRecipe {
         this.outputs = Collections.unmodifiableList(outputs);
 
         HeightProvider heightProvider = null;
-        List<Biome> biomes = List.of();
+        List<Biome> biomes = getBiomes(id, feature);
         int countMin = -1;
         int countMax = -1;
         int rarityChance = -1;
         for (PlacementModifier modifier : feature.placement()) {
             if (modifier instanceof HeightRangePlacement heightRange) {
                 heightProvider = ((HeightRangePlacementAccessor) heightRange).getHeight();
-            } else if (modifier instanceof BiomeFilter) {
-                biomes = getBiomes(id, feature);
             } else if (modifier instanceof CountPlacement countPlacement) {
                 IntProvider countIntProvider = ((CountPlacementAccessor) countPlacement).getCount();
                 countMin = countIntProvider.getMinValue();
