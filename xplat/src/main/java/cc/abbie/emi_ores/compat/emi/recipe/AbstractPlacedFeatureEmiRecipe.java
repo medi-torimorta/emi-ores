@@ -9,6 +9,7 @@ import dev.emi.emi.api.widget.TextWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -35,21 +36,31 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             s = String.valueOf(absolute.y());
         } else if (anchor instanceof VerticalAnchor.AboveBottom aboveBottom) {
             int offset = aboveBottom.offset();
-            if (offset == 0) {
-                s = "bot";
-            } else if (offset > 0) {
-                s = "bot+" + offset;
+            if (Screen.hasShiftDown()) {
+                int height = Minecraft.getInstance().level.getMinBuildHeight() + offset;
+                s = String.valueOf(height);
             } else {
-                s = "bot" + offset;
+                if (offset == 0) {
+                    s = "bot";
+                } else if (offset > 0) {
+                    s = "bot+" + offset;
+                } else {
+                    s = "bot" + offset;
+                }
             }
         } else if (anchor instanceof VerticalAnchor.BelowTop belowTop) {
             int offset = -belowTop.offset();
-            if (offset == 0) {
-                s = "top";
-            } else if (offset > 0) {
-                s = "top+" + offset;
+            if (Screen.hasShiftDown()) {
+                int height = Minecraft.getInstance().level.getMaxBuildHeight() + offset;
+                s = String.valueOf(height);
             } else {
-                s = "top" + offset;
+                if (offset == 0) {
+                    s = "top";
+                } else if (offset > 0) {
+                    s = "top+" + offset;
+                } else {
+                    s = "top" + offset;
+                }
             }
         } else {
             throw new RuntimeException();
@@ -66,23 +77,31 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             return Component.literal(String.valueOf(absolute.y()));
         } else if (anchor instanceof VerticalAnchor.AboveBottom aboveBottom) {
             int offset = aboveBottom.offset();
-            int height = Minecraft.getInstance().level.getMinBuildHeight() + offset;
-            if (offset == 0) {
-                return Component.translatable("emi_ores.distribution.anchor.bottom", height);
-            } else if (offset > 0) {
-                return Component.translatable("emi_ores.distribution.anchor.above_bottom", offset, height);
+            if (Screen.hasShiftDown()) {
+                int height = Minecraft.getInstance().level.getMinBuildHeight() + offset;
+                return Component.literal(String.valueOf(height));
             } else {
-                return Component.translatable("emi_ores.distribution.anchor.below_bottom", -offset, height);
+                if (offset == 0) {
+                    return Component.translatable("emi_ores.distribution.anchor.bottom");
+                } else if (offset > 0) {
+                    return Component.translatable("emi_ores.distribution.anchor.above_bottom", offset);
+                } else {
+                    return Component.translatable("emi_ores.distribution.anchor.below_bottom", -offset);
+                }
             }
         } else if (anchor instanceof VerticalAnchor.BelowTop belowTop) {
             int offset = -belowTop.offset();
-            int height = Minecraft.getInstance().level.getMaxBuildHeight() + offset;
-            if (offset == 0) {
-                return Component.translatable("emi_ores.distribution.anchor.top", height);
-            } else if (offset > 0) {
-                return Component.translatable("emi_ores.distribution.anchor.above_top", offset, height);
+            if (Screen.hasShiftDown()) {
+                int height = Minecraft.getInstance().level.getMaxBuildHeight() + offset;
+                return Component.literal(String.valueOf(height));
             } else {
-                return Component.translatable("emi_ores.distribution.anchor.below_top", -offset, height);
+                if (offset == 0) {
+                    return Component.translatable("emi_ores.distribution.anchor.top");
+                } else if (offset > 0) {
+                    return Component.translatable("emi_ores.distribution.anchor.above_top", offset);
+                } else {
+                    return Component.translatable("emi_ores.distribution.anchor.below_top", -offset);
+                }
             }
         } else {
             throw new RuntimeException();
@@ -171,7 +190,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
                 tooltip.add(Component.translatable("emi_ores.distribution.middle_range", anchorTextLong(midLow), anchorTextLong(midHigh)).withStyle(ChatFormatting.GRAY));
             }
         }
-        if (!(min instanceof VerticalAnchor.Absolute) || !(max instanceof VerticalAnchor.Absolute)) {
+        if (Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
         }
         return tooltip;
