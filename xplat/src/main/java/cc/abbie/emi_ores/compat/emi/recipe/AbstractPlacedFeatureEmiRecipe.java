@@ -193,6 +193,9 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         }
         if (useCurrentDimension()) {
             tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("emi_ores.distribution.shift.relative").withStyle(ChatFormatting.GRAY));
+        } else {
+            tooltip.add(Component.translatable("emi_ores.distribution.shift.dimension").withStyle(ChatFormatting.GRAY));
         }
         return tooltip;
     }
