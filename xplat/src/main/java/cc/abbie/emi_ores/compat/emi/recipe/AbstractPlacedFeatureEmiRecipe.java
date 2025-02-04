@@ -2,6 +2,7 @@ package cc.abbie.emi_ores.compat.emi.recipe;
 
 import cc.abbie.emi_ores.EmiOres;
 import cc.abbie.emi_ores.client.FeaturesReciever;
+import cc.abbie.emi_ores.client.config.EmiOresClientConfig;
 import cc.abbie.emi_ores.mixin.accessor.TrapezoidHeightAccessor;
 import cc.abbie.emi_ores.mixin.accessor.UniformHeightAccessor;
 import dev.emi.emi.api.recipe.EmiRecipe;
@@ -36,7 +37,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             s = String.valueOf(absolute.y());
         } else if (anchor instanceof VerticalAnchor.AboveBottom aboveBottom) {
             int offset = aboveBottom.offset();
-            if (Screen.hasShiftDown()) {
+            if (useCurrentDimension()) {
                 int height = Minecraft.getInstance().level.getMinBuildHeight() + offset;
                 s = String.valueOf(height);
             } else {
@@ -50,7 +51,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             }
         } else if (anchor instanceof VerticalAnchor.BelowTop belowTop) {
             int offset = -belowTop.offset();
-            if (Screen.hasShiftDown()) {
+            if (useCurrentDimension()) {
                 int height = Minecraft.getInstance().level.getMaxBuildHeight() + offset;
                 s = String.valueOf(height);
             } else {
@@ -77,7 +78,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             return Component.literal(String.valueOf(absolute.y()));
         } else if (anchor instanceof VerticalAnchor.AboveBottom aboveBottom) {
             int offset = aboveBottom.offset();
-            if (Screen.hasShiftDown()) {
+            if (useCurrentDimension()) {
                 int height = Minecraft.getInstance().level.getMinBuildHeight() + offset;
                 return Component.literal(String.valueOf(height));
             } else {
@@ -91,7 +92,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             }
         } else if (anchor instanceof VerticalAnchor.BelowTop belowTop) {
             int offset = -belowTop.offset();
-            if (Screen.hasShiftDown()) {
+            if (useCurrentDimension()) {
                 int height = Minecraft.getInstance().level.getMaxBuildHeight() + offset;
                 return Component.literal(String.valueOf(height));
             } else {
@@ -190,7 +191,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
                 tooltip.add(Component.translatable("emi_ores.distribution.middle_range", anchorTextLong(midLow), anchorTextLong(midHigh)).withStyle(ChatFormatting.GRAY));
             }
         }
-        if (Screen.hasShiftDown()) {
+        if (useCurrentDimension()) {
             tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
         }
         return tooltip;
@@ -210,6 +211,10 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
             veinFreq = null;
         }
         return veinFreq;
+    }
+
+    protected static boolean useCurrentDimension() {
+        return Screen.hasShiftDown() != EmiOresClientConfig.INSTANCE.showHeightValuesForCurrentDimensionByDefault();
     }
 
     protected enum HeightProviderType {
