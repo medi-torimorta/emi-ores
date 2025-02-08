@@ -33,7 +33,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
 
     private static final ResourceLocation DISTRIBUTION = EmiOres.id("textures/gui/distribution.png");
 
-    protected static Component anchorText(VerticalAnchor anchor) {
+    private static Component anchorText(VerticalAnchor anchor) {
         String s;
         if (anchor instanceof VerticalAnchor.Absolute absolute) {
             s = String.valueOf(absolute.y());
@@ -71,7 +71,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         return Component.literal(s);
     }
 
-    protected static Component anchorTextLong(VerticalAnchor anchor) {
+    private static Component anchorTextLong(VerticalAnchor anchor) {
         return anchorTextLongInner(anchor).withStyle(ChatFormatting.WHITE);
     }
 
@@ -195,7 +195,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         }
     }
 
-    protected static List<ClientTooltipComponent> getDistributionGraphTooltip(HeightProviderType type, VerticalAnchor min, VerticalAnchor max, VerticalAnchor midLow, VerticalAnchor midHigh) {
+    private static List<ClientTooltipComponent> getDistributionGraphTooltip(HeightProviderType type, VerticalAnchor min, VerticalAnchor max, VerticalAnchor midLow, VerticalAnchor midHigh) {
         List<Component> tooltip = new ArrayList<>();
 
         tooltip.add(type.name);
@@ -232,7 +232,7 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         return veinFreq;
     }
 
-    protected static boolean useCurrentDimension() {
+    private static boolean useCurrentDimension() {
         return Screen.hasShiftDown() != EmiOresClientConfig.INSTANCE.showHeightValuesForCurrentDimensionByDefault();
     }
 
