@@ -10,7 +10,9 @@ import dev.emi.emi.api.widget.TextWidget;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -117,6 +119,27 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
                 .map(biomeRegistry::get)
                 .toList();
     }
+    
+    private static void addAnchorText(WidgetHolder widgets, VerticalAnchor anchor, int x, int y, TextWidget.Alignment verticalAlign, TextWidget.Alignment horizontalAlign) {
+        Font font = Minecraft.getInstance().font;
+        
+        widgets.addDrawable(x, y, 0, 0, (gui, mouseX, mouseY, delta) -> {
+            Component text = anchorText(anchor);
+            int textWidth = font.width(text);
+            int textHeight = font.lineHeight;
+            int textX = switch (horizontalAlign) {
+                case START -> 0;
+                case CENTER -> -textWidth/2;
+                case END -> -textWidth;
+            };
+            int textY = switch (verticalAlign) {
+                case START -> 0;
+                case CENTER -> -textHeight/2;
+                case END -> -textHeight;
+            };
+            gui.drawString(Minecraft.getInstance().font, text, textX, textY, 0, false);
+        });
+    }
 
     protected static void addDistributionGraph(WidgetHolder widgets, int x, int y, HeightProvider heightProvider) {
         if (heightProvider == null) return;
@@ -153,12 +176,6 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
 
             if (plateau == 0) {
                 type = HeightProviderType.TRIANGULAR;
-
-                if (midLow != null) {
-                    widgets.addText(anchorText(midLow), 80, 8, 0, false)
-                            .verticalAlign(TextWidget.Alignment.CENTER)
-                            .horizontalAlign(TextWidget.Alignment.CENTER);
-                }
             } else {
                 type = HeightProviderType.TRAPEZOID;
             }
@@ -168,18 +185,17 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         }
 
         if (type != null && min != null && max != null) {
-            widgets.addTexture(DISTRIBUTION, x, y, 32, 16, 0, type.v)
-                    .tooltipText(getDistributionGraphTooltip(type, min, max, midLow, midHigh));
-            widgets.addText(anchorText(min), x, y+8, 0, false)
-                    .verticalAlign(TextWidget.Alignment.CENTER)
-                    .horizontalAlign(TextWidget.Alignment.END);
-            widgets.addText(anchorText(max), x+32, y+8, 0, false)
-                    .verticalAlign(TextWidget.Alignment.CENTER)
-                    .horizontalAlign(TextWidget.Alignment.START);
+            widgets.addTexture(DISTRIBUTION, x, y, 32, 16, 0, type.v);
+            widgets.addTooltip((mouseX, mouseY) -> getDistributionGraphTooltip(type, min, max, midLow, midHigh), x, y, 32, 16);
+            addAnchorText(widgets, min, x, y+8, TextWidget.Alignment.CENTER, TextWidget.Alignment.END);
+            addAnchorText(widgets, max, x+32, y+8, TextWidget.Alignment.CENTER, TextWidget.Alignment.START);
+            if (type == HeightProviderType.TRIANGULAR && midLow != null) {
+                addAnchorText(widgets, midLow, 80, 8, TextWidget.Alignment.CENTER, TextWidget.Alignment.CENTER);
+            }
         }
     }
 
-    protected static List<Component> getDistributionGraphTooltip(HeightProviderType type, VerticalAnchor min, VerticalAnchor max, VerticalAnchor midLow, VerticalAnchor midHigh) {
+    protected static List<ClientTooltipComponent> getDistributionGraphTooltip(HeightProviderType type, VerticalAnchor min, VerticalAnchor max, VerticalAnchor midLow, VerticalAnchor midHigh) {
         List<Component> tooltip = new ArrayList<>();
 
         tooltip.add(type.name);
@@ -193,11 +209,11 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
         }
         if (useCurrentDimension()) {
             tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
-            tooltip.add(Component.translatable("emi_ores.distribution.shift.relative").withStyle(ChatFormatting.GRAY));
-        } else {
+            if (!Screen.hasShiftDown()) tooltip.add(Component.translatable("emi_ores.distribution.shift.relative").withStyle(ChatFormatting.GRAY));
+        } else if (!Screen.hasShiftDown()) {
             tooltip.add(Component.translatable("emi_ores.distribution.shift.dimension").withStyle(ChatFormatting.GRAY));
         }
-        return tooltip;
+        return tooltip.stream().map(Component::getVisualOrderText).map(ClientTooltipComponent::create).toList();
     }
 
     protected static Component getVeinFreqComponent(int countMin, int countMax, int rarityChance) {
