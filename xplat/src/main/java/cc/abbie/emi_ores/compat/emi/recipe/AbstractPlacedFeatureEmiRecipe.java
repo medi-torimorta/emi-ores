@@ -207,11 +207,13 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
                 tooltip.add(Component.translatable("emi_ores.distribution.middle_range", anchorTextLong(midLow), anchorTextLong(midHigh)).withStyle(ChatFormatting.GRAY));
             }
         }
-        if (useCurrentDimension()) {
-            tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
-            if (!Screen.hasShiftDown()) tooltip.add(Component.translatable("emi_ores.distribution.shift.relative").withStyle(ChatFormatting.GRAY));
-        } else if (!Screen.hasShiftDown()) {
-            tooltip.add(Component.translatable("emi_ores.distribution.shift.dimension").withStyle(ChatFormatting.GRAY));
+        if (hasAnyRelative(min, max, midLow, midHigh)) {
+            if (useCurrentDimension()) {
+                tooltip.add(Component.translatable("emi_ores.distribution.dimension", Minecraft.getInstance().level.dimension().location()).withStyle(ChatFormatting.GRAY));
+                if (!Screen.hasShiftDown()) tooltip.add(Component.translatable("emi_ores.distribution.shift.relative").withStyle(ChatFormatting.GRAY));
+            } else if (!Screen.hasShiftDown()) {
+                tooltip.add(Component.translatable("emi_ores.distribution.shift.dimension").withStyle(ChatFormatting.GRAY));
+            }
         }
         return tooltip.stream().map(Component::getVisualOrderText).map(ClientTooltipComponent::create).toList();
     }
@@ -234,6 +236,15 @@ public abstract class AbstractPlacedFeatureEmiRecipe implements EmiRecipe {
 
     private static boolean useCurrentDimension() {
         return Screen.hasShiftDown() != EmiOresClientConfig.INSTANCE.showHeightValuesForCurrentDimensionByDefault();
+    }
+    
+    private static boolean hasAnyRelative(VerticalAnchor... anchors) {
+        for (VerticalAnchor anchor : anchors) {
+            if (anchor instanceof VerticalAnchor.AboveBottom || anchor instanceof VerticalAnchor.BelowTop) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected enum HeightProviderType {
